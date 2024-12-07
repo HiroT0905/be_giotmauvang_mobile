@@ -1,7 +1,5 @@
 package com.example.DACN.mapper;
 
-import com.example.DACN.dto.request.UserCreationRequest;
-import com.example.DACN.dto.request.UserUpdateRequest;
 import com.example.DACN.dto.response.UserResponse;
 import com.example.DACN.dto.viewModel.UserInfoDTO;
 import com.example.DACN.model.User;
@@ -13,7 +11,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2024-10-17T14:22:19+0700",
+    date = "2024-12-03T16:06:01+0700",
     comments = "version: 1.6.2, compiler: javac, environment: Java 22.0.1 (Oracle Corporation)"
 )
 @Component
@@ -84,9 +82,6 @@ public class UserMapperImpl implements UserMapper {
         userInfo.fullName( userInfoDTO.getFullName() );
         userInfo.dob( userInfoDTO.getDob() );
         userInfo.sex( userInfoDTO.getSex() );
-        userInfo.phone( userInfoDTO.getPhone() );
-        userInfo.address( userInfoDTO.getAddress() );
-        userInfo.email( userInfoDTO.getEmail() );
 
         return userInfo.build();
     }
@@ -103,9 +98,6 @@ public class UserMapperImpl implements UserMapper {
         userInfoDTO.fullName( userInfo.getFullName() );
         userInfoDTO.dob( userInfo.getDob() );
         userInfoDTO.sex( userInfo.getSex() );
-        userInfoDTO.phone( userInfo.getPhone() );
-        userInfoDTO.address( userInfo.getAddress() );
-        userInfoDTO.email( userInfo.getEmail() );
 
         return userInfoDTO.build();
     }

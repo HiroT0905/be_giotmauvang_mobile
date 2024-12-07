@@ -16,9 +16,12 @@ import java.util.Set;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Role {
     @Id
-    private String name;
-    private String description;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    @ManyToMany
-    private Set<Permission> permissions = new HashSet<>();
+    private String name;
+
+    private String description;
+    @OneToMany(mappedBy = "role")
+    private Set<User> users = new HashSet<>();
 }
