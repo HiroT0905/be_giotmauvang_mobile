@@ -75,7 +75,7 @@ import Cookies from 'js-cookie'; // Thêm thư viện cookies
 // import Cookies from "../../Cookies";
 
 function LoginPage() {
-  const [cccd, setCccd] = useState('');
+  const [cccd, setCccd] =  useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();

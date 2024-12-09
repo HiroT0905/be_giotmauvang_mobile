@@ -7,14 +7,14 @@ import Home from "./pages/Home/Home";
 // import ClientLayout from "./layouts/ClientLayout/ClientLayout";
 import Appointments from "./pages/Appointments/Appointments";
 import Faq from "./pages/FAQ/Faq";
-import Booking from "./pages/Booking/Booking";
+// import Booking from "./pages/Booking/Booking";
 import Certificate from "./pages/Certificate/certificate";
 import HistoryAppoint from "./pages/HistoryAppoint/HistoryAppoint";
 import News from "./pages/News/News";
 import Contact from "./pages/Contact/Contact";
-import Settings from "./pages/Account/Settings";
+// import Settings from "./pages/Account/Settings";
 import Profile from "./pages/Account/Profile";
-import UserService from './service/userService'
+// import UserService from './service/userService'
 import RegistrationPage from './pages/auth/RegistrationPage.jsx'
 import ClientFooter from "./layouts/ClientLayout/ClientFooter.jsx";
 
@@ -93,6 +93,7 @@ function App() {
   return (
     <BrowserRouter>
       <div className="App">
+
         <ClientHeader />
         <div className="content">
           <Routes>
