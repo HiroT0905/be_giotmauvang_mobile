@@ -30,18 +30,22 @@ public class User implements UserDetails {
     private String username;
 
     String password;
+    private String phone;
+    private String email;
 
 //    @OneToOne
 //    private Role roles;
 
+    @OneToOne
+    @JoinColumn(name = "user_info_id", referencedColumnName = "id")
+    private UserInfo userInfo;
+
     @ManyToOne
     @JoinColumn(name = "role_id" , referencedColumnName = "id", nullable = false)
     private Role role ;
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = false)
-    private UserInfo userInfo;
 
-    @OneToOne (mappedBy =  "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = false)
-    private UserContact userContact;
+
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(role.getName()));
@@ -50,6 +54,7 @@ public class User implements UserDetails {
     public boolean isCredentialsNonExpired(){
         return true;
     }
+
 
     @Override
     public boolean isAccountNonLocked(){

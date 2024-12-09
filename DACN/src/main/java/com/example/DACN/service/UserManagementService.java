@@ -1,19 +1,14 @@
 package com.example.DACN.service;
 
-import com.example.DACN.config.JWTAuthFilter;
 import com.example.DACN.dto.request.ApiResponse;
+import com.example.DACN.model.Role;
 import com.example.DACN.model.User;
-import com.example.DACN.model.UserContact;
 import com.example.DACN.model.UserInfo;
-import com.example.DACN.repository.UserContactRepo;
 import com.example.DACN.repository.UserInfoRepo;
 import com.example.DACN.repository.UsersRepo;
-import io.jsonwebtoken.Jwts;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -26,8 +21,7 @@ public class UserManagementService {
     @Autowired
     private UsersRepo usersRepo;
 
-    @Autowired
-    private UserContactRepo userContactRepo;
+
 
     @Autowired
     private UserInfoRepo userInfoRepo;
@@ -38,41 +32,45 @@ public class UserManagementService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    Role userole = new Role(2L);
 
     public ApiResponse register(ApiResponse registrationRequest ){
         ApiResponse resp = new ApiResponse();
-        try{
-            User user = new User();
-            user.setUsername(registrationRequest.getCccd());
-            user.setRole(registrationRequest.getRole());
-            user.setPassword(passwordEncoder.encode(registrationRequest.getPassword()));
-            User userResult=  usersRepo.save(user);
-
-
-            //save userinfo
-            UserInfo userInfo = new UserInfo();
-            userInfo.setFullName(registrationRequest.getFullName());
-            userInfo.setDob(registrationRequest.getDob());
-            userInfo.setUser(userResult);
-            userInfo.setSex(registrationRequest.getSex());
-            userInfoRepo.save(userInfo);
-
-            //save usercontact
-            UserContact userContact = new UserContact();
-            userContact.setEmail(registrationRequest.getEmail());
-            userContact.setPhone(registrationRequest.getPhone());
-            userContact.setAddress(registrationRequest.getAddress());
-            userContact.setUser(userResult);
-            userContactRepo.save(userContact);
-
-            resp.setUser(userResult);
-            resp.setMessage("User, UserInfo, and UserContact saved successfully");
-            resp.setCode(200);
-
-        }catch(Exception e){
+        var existedUser = usersRepo.findUserByUsername(registrationRequest.getCccd());
+        if (existedUser.isPresent()){
             resp.setCode(500);
-            resp.setError(e.getMessage());
+            resp.setMessage("User already exists");
+            return resp;
         }
+            try{ UserInfo userInfo = new UserInfo();
+                userInfo.setFullName(registrationRequest.getFullName());
+                userInfo.setDob(registrationRequest.getDob());
+                userInfo.setSex(registrationRequest.getSex());
+                userInfoRepo.save(userInfo);
+
+                User user = new User();
+                user.setUsername(registrationRequest.getCccd());
+                user.setRole(userole  );
+                user.setPassword(passwordEncoder.encode(registrationRequest.getPassword()));
+                user.setUserInfo(userInfo);
+
+
+                User userResult=  usersRepo.save(user);
+
+                //save userinfo
+
+
+
+
+                resp.setUser(userResult);
+                resp.setMessage("User, UserInfo, and UserContact saved successfully");
+                resp.setCode(200);
+
+            }catch(Exception e){
+                resp.setCode(500);
+                resp.setError(e.getMessage());
+            }
+
 
         return resp;
     }
@@ -82,10 +80,13 @@ public class UserManagementService {
         try{
                 authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getCccd(), loginRequest.getPassword()));
                 var user = usersRepo.findUserByUsername(loginRequest.getCccd()).orElseThrow();
+//                var userInfo = userInfoRepo.findUserInfoByUserUsername(loginRequest.getCccd()).orElseThrow();
                 var jwt = jwtUtils.generateToken(user);
                 var refreshToken = jwtUtils.generateRefreshToken(new HashMap<>(), user);
                 response.setCode(200);
                 response.setToken(jwt);
+                response.setUserInfo(user.getUserInfo());
+                response.setUser(user);
                 response.setRefreshToken(refreshToken);
                 response.setExpirationTime("24hours");
                 response.setMessage("Successfully logged in");
@@ -193,6 +194,7 @@ public class UserManagementService {
 
                 if (updatedUser.getRole() != null) {
                     existingUser.setRole(updatedUser.getRole());
+
                 }
 
                 // Cập nhật thông tin UserInfo nếu có
@@ -208,22 +210,6 @@ public class UserManagementService {
                     }
                     if (updatedInfo.getSex() != null) {
                         existingInfo.setSex(updatedInfo.getSex());
-                    }
-                }
-
-                // Cập nhật thông tin UserContact nếu có
-                if (updatedUser.getUserContact() != null) {
-                    UserContact updatedContact = updatedUser.getUserContact();
-                    UserContact existingContact = existingUser.getUserContact();
-
-                    if (updatedContact.getPhone() != null) {
-                        existingContact.setPhone(updatedContact.getPhone());
-                    }
-                    if (updatedContact.getEmail() != null) {
-                        existingContact.setEmail(updatedContact.getEmail());
-                    }
-                    if (updatedContact.getAddress() != null) {
-                        existingContact.setAddress(updatedContact.getAddress());
                     }
                 }
 
@@ -246,26 +232,28 @@ public class UserManagementService {
     }
 
 
-    public ApiResponse getMyInfo(String cccd){
-        ApiResponse reqRes = new ApiResponse();
-        try {
-            Optional<User> userOptional = usersRepo.findUserByUsername(cccd);
-            if (userOptional.isPresent()) {
-                reqRes.setUser(userOptional.get());
-                reqRes.setCode(200);
-                reqRes.setMessage("successful");
-            } else {
-                reqRes.setCode(404);
-                reqRes.setMessage("User not found for update");
+        public ApiResponse getMyInfo(String cccd){
+            ApiResponse reqRes = new ApiResponse();
+            try {
+                Optional<User> userOptional = usersRepo.findUserByUsername(cccd);
+
+                if (userOptional.isPresent()) {
+                    reqRes.setUser(userOptional.get());
+//                    reqRes.setUserInfo(userOptional.get().getUserInfo()); // Thêm userinfo
+                    reqRes.setCode(200);
+                    reqRes.setMessage("successful");
+                } else {
+                    reqRes.setCode(404);
+                    reqRes.setMessage("User not found for update");
+                }
+
+            }catch (Exception e){
+                reqRes.setCode(500);
+                reqRes.setMessage("Error occurred while getting user info: " + e.getMessage());
             }
+            return reqRes;
 
-        }catch (Exception e){
-            reqRes.setCode(500);
-            reqRes.setMessage("Error occurred while getting user info: " + e.getMessage());
         }
-        return reqRes;
-
-    }
 
 }
 

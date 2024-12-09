@@ -24,4 +24,8 @@ public class Role {
     private String description;
     @OneToMany(mappedBy = "role")
     private Set<User> users = new HashSet<>();
+
+    public Role(Long id){
+        this.id = id;
+    }
 }

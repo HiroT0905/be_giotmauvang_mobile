@@ -22,8 +22,6 @@ public class UserInfo {
     private String fullName;
     private LocalDate dob;
     private String sex;
+    private String address;
 
-    @OneToOne
-    @JoinColumn(name = "user_cccd", referencedColumnName = "CCCD")
-    private User user;
 }

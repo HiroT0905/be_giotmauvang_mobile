@@ -2,7 +2,6 @@ package com.example.DACN.dto.request;
 
 import com.example.DACN.model.Role;
 import com.example.DACN.model.User;
-import com.example.DACN.model.UserContact;
 import com.example.DACN.model.UserInfo;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
@@ -40,6 +39,7 @@ public class ApiResponse {
     String address;
 
     User user;
+    UserInfo userInfo;
     Role role;
     List<User> userList;
 }
