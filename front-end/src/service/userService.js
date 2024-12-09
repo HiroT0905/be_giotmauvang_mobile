@@ -66,18 +66,42 @@ class UserService{
     }
 
 
-    static async getYourProfile(token){
-        try{
-            const response = await axiosInstance.get(`/adminuser/get-profile`, 
-            {
-                headers: {Authorization: `Bearer ${token}`}
-            })
+    // static async getYourProfile(token){
+    //     try{
+    //         const response = await axiosInstance.get(`/adminuser/get-profile`, 
+    //         {
+    //             headers: {Authorization: `Bearer ${token}`}
+    //         })
+    //         return response.data;
+    //     }catch(err){
+    //         throw err;
+    //     }
+    // }
+
+    static async getYourProfile(token) {
+        try {
+            const response = await axiosInstance.get(`/adminuser/get-profile`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
             return response.data;
-        }catch(err){
-            throw err;
+        } catch (err) {
+            // Nếu có lỗi, kiểm tra và đưa ra thông báo chi tiết hơn
+            if (err.response) {
+                // Lỗi phản hồi từ server
+                console.error("Server responded with error:", err.response.data);
+                throw new Error(`Server error: ${err.response.data.message || err.response.data}`);
+            } else if (err.request) {
+                // Nếu không nhận được phản hồi từ server
+                console.error("No response received:", err.request);
+                throw new Error("No response received from the server.");
+            } else {
+                // Các lỗi khác (ví dụ cấu hình axios sai)
+                console.error("Error during API call:", err.message);
+                throw new Error(`Error during API call: ${err.message}`);
+            }
         }
     }
-
+    
     static async getUserById(cccd, token){
         try{
             const response = await axiosInstance.get(`/admin/get-users/${cccd}`, 

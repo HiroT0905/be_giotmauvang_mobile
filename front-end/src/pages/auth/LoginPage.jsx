@@ -72,6 +72,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import UserService from '../../service/userService';
 import Cookies from 'js-cookie'; // Thêm thư viện cookies
+// import Cookies from "../../Cookies";
 
 function LoginPage() {
   const [cccd, setCccd] = useState('');
@@ -90,9 +91,13 @@ function LoginPage() {
       if (userData.token) {
         // Lưu thông tin vào cookies (token, role, userName)
         Cookies.set('token', userData.token, { expires: 1, secure: true, sameSite: 'Strict' });
-        Cookies.set('role', userData.role, { expires: 1, secure: true, sameSite: 'Strict' });
-        Cookies.set('userName', userData.cccd, { expires: 1, secure: true, sameSite: 'Strict' });
-        
+        Cookies.set('userName', userData.user.username, { expires: 1, secure: true, sameSite: 'Strict' });      
+        // Cookies.set('phone', userData.user.phone, { expires: 1, secure: true, sameSite: 'Strict' });   
+        // Cookies.set('userInfo',userData.user.userInfo)   
+        Cookies.set('user',userData.user)
+
+
+          
         // Điều hướng người dùng tới trang chính sau khi đăng nhập thành công
         navigate('/');
       } else {
